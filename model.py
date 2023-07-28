@@ -14,7 +14,7 @@ class Cell(nn.Module):
     #print(C_prev_prev, C_prev, C)
     self.preprocess0 = Identity()
     #print(genotype.normal[i])
-    op_names, indices = zip(*genotype.normal)#取第i个cell的结构
+    op_names, indices = zip(*genotype.normal)
     concat = genotype.normal_concat
     self._compile(C, op_names, indices, concat)
 
@@ -85,31 +85,11 @@ class NetworkDEAP(nn.Module):
     s0 = self.stem(input)
     #print("s0.shape",s0.shape)
     skip = 0
-
-
     for i, cell in enumerate(self.cells):
-    
       s0 = cell(s0, self.drop_path_prob)
-
     skip = self.skip_connect[0](s0) + skip
-    '''
-      为了将每个cell模块的输出通过一维卷积层进行变换，使其通道数与最终的输出通道数相同，
-      然后进行累加，形成一个skip连接。这样可以增加网络的深度和复杂度，同时保留不同层次的特征。
-    '''
-    
     state = torch.max(F.relu(skip), dim=-1, keepdim=True)[0]
-    '''
-    这行代码的作用是对skip张量应用ReLU激活函数，然后在最后一个维度上取最大值，
-    并保持原来的维度，得到一个新的张量。然后从这个新的张量中取出第0个元素，赋值给state变量。
-    在最后一个维度上取最大值的目的是为了提取出每个通道的特征，即每个通道中最有代表性的值。
-    这样可以减少计算量，同时保留重要的信息。
-    '''
     out = self.global_pooling(state)
-    '''
-    全局池化是一种特殊的池化层，它的输出大小为1，也就是说，
-    它会将输入的每个通道内的所有元素求平均值，得到一个新的元素。
-    这样可以将输入的特征图转换为一个向量，方便后续的分类或回归操作。
-    '''
     logits = self.classifier(out.view(out.size(0),-1))
     return logits
 
