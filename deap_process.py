@@ -95,8 +95,6 @@ def decompose(file):
 		temp_base_DE = np.append(temp_base_DE,temp_base_gamma_DE)
 		base_DE = np.vstack([base_DE,temp_base_DE])
 	decomposed_de = decomposed_de.reshape(-1,32,4,240).transpose([0,3,2,1]).reshape(-1,4,32).reshape(-1,128)
-	#reshape(40,32,4,15,4).transpose([0,3,1,2,4]).reshape(-1,32,4,4)
-	#base_DE = base_DE.reshape(-1,32,4)
 	print("base_DE shape:",base_DE.shape)
 	print("trial_DE shape:",decomposed_de.shape)
 	return base_DE,decomposed_de
@@ -128,9 +126,6 @@ def get_labels(file):
 			final_arousal_labels = np.append(final_arousal_labels,arousal_labels[i])
 			final_av_labels = np.append(final_av_labels,av_labels[i])
 	print("labels:",final_valence_labels.shape)
-	#print("labels:",final_av_labels[:10])
-	#print("labels:",final_arousal_labels[:10])
-	#print("labels:",final_valence_labels[:10])
 	return final_arousal_labels,final_valence_labels,final_av_labels
 
 def wgn(x, snr):
